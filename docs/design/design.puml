@@ -1,2 +1,88 @@
 @startuml
+class Game {
+    - players : List<Player>
+    - deck : Deck
+    - discardPile : DiscardPile
+    - currentPlayerIndex : int
+
+    + startGame()
+    + nextTurn()
+    + playCard(card : Card)
+    + eliminatePlayer(player : Player)
+}
+
+class Player {
+    - name : String
+    - hand : List<Card>
+    - alive : boolean
+
+    + drawCard(deck : Deck)
+    + playCard(card : Card, game : Game)
+    + hasDefuse() : boolean
+}
+
+class Deck {
+    - cards : List<Card>
+
+    + shuffle()
+    + draw() : Card
+    + addCard(card : Card)
+}
+
+class DiscardPile {
+    - cards : List<Card>
+
+    + add(card : Card)
+    + top() : Card
+}
+
+abstract class Card {
+    - name : String
+
+    + execute(game : Game, player : Player)
+}
+
+class ExplodingKittenCard {
+    + execute(game : Game, player : Player)
+}
+
+class NopeCard {
+    + execute(game : Game, player : Player)
+}
+
+class ShuffleCard {
+    + execute(game : Game, player : Player)
+}
+
+class DefuseCard {
+    + execute(game : Game, player : Player)
+}
+
+class SkipCard {
+    + execute(game : Game, player : Player)
+}
+
+class AttackCard {
+    + execute(game : Game, player : Player)
+}
+
+class FavorCard {
+    + execute(game : Game, player : Player)
+}
+
+Game --> Deck
+Game --> DiscardPile
+Game --> Player
+
+Player --> Card
+Deck --> Card
+DiscardPile --> Card
+
+Card <|-- ExplodingKittenCard
+Card <|-- NopeCard
+Card <|-- ShuffleCard
+Card <|-- DefuseCard
+Card <|-- SkipCard
+Card <|-- AttackCard
+Card <|-- FavorCard
 @enduml
