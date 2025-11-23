@@ -1,0 +1,123 @@
+@startuml
+package domain.game{
+    +class Card{
+        -cardType: CardType
+        -isMarked: boolean
+        -isFacedUp: boolean
+
+        +Card(cardType: CardType)
+        +getCardType(): CardType
+        +markCard(): void
+        +checkIfMarked(): boolean
+        +setFacedUp(): void
+        +checkIfFacedUp(): boolean
+    }
+    +enum CardType{
+        NOPE
+        DEFFUSE
+        SHUFFLE
+        EXPLODING_KITTEN
+
+
+    }
+    +class Deck
+    {
+        -deck: List<Card>
+        -rand: Random
+        -gameType: GameType
+        -numberofPlayers: int
+        -maxDeckSize: int
+        -instantiator: Instantiator
+
+        + getDeckSize(): int
+        + getCardAtIndex(index: int): Card
+        + initializeDeck(): void
+        + shuffleDeck(): void
+        + insertCard(cardType: CardType, numberOfCards: int, bottom: boolean): void
+        + drawCard(): Card
+        +drawCardFromBottom(): Card
+        +setNumberOfPlayers(numberOfPlayers: int): void
+        +chooseGameType(gameType: GameType): void
+        +removeBombs(): int
+        +insertExplodingKittensAtIndex(indexToInsert: int): void
+        +insertImplodingKittenAtIndex(indexToInsert: int, card: Card): void
+
+    }
+    +class Game
+    {
+        -numberOfPlayers: int
+        -gameType: GameType
+        -deck: Deck
+        -players: Player[]
+        -rand: Random
+
+        -currentPlayerTurn: int
+        -currentPlayerNumberofTurns: int
+        -isReversed: boolean
+        -attackQueue: List<int>
+        -attackCounter: int
+        -numberOfAttacks: int
+        -turnTracker: int[]
+        -attacked: boolean
+
+        +swapTopAndBottom(): void
+        +stealRandomCard(playerToStealFrom: int): Card
+        +stealTypeCard(cardType: CardType, playerToStealFrom: int): void
+        +startAttackPhase(): void
+        +playAttack(): void
+        +playTargetedAttack(attackedPlayerIndex: int): void
+        +playExplodingKitten(playerIndex: int): boolean
+        +playImplodingKitten(): void
+        +playDefuse(idxToInsertExplodingKitten: int, playerIndex: int): void
+        +drawFromBottom(): Card
+        +playerCatomicBomb(): void
+        +playReverse(): void
+        +playSkip(superSkip: boolean): int
+        }
+    +enum GameType
+    {
+        NONE
+        EXPLODING_KITTENS
+        STREAKING_KITTENS
+        IMPLODING_KITTENS
+    }
+    +class Instantiator
+    {
+
+    }
+    +class Player
+    {
+        -playerID: int
+        -hand: List<Card>
+        -isDead: boolean
+        -rand: Random
+        -isCursed: boolean
+    }
+
+    Deck-->"*"Card
+    Player-->"*"Card
+    Deck..>Instantiator
+    Deck..>GameType
+    Deck..>Card
+    Deck..>CardType
+
+    Game-->Deck
+    Game-->"*"Player
+    Game..>Player
+    Game..>GameType
+    Game..>CardType
+    Game..>Card
+}
+package ui{
+    +class GameUI{
+        -game: Game
+        -messages: ResourceBundle
+    }
+    +class Main{
+
+    }
+
+    GameUI-->Game
+    GameUI-->ResourceBundle
+}
+@enduml
