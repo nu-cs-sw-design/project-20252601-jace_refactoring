@@ -1,5 +1,165 @@
 @startuml
-class PlayContext{
 
+package "domain.game" {
+
+    ' ===== Core Types =====
+    enum GameType {
+        EXPLODING_KITTENS
+        IMPLODING_KITTENS
+        STREAKING_KITTENS
+        NONE
+    }
+
+    enum CardType {
+        EXPLODING_KITTEN
+        DEFUSE
+        SHUFFLE
+        NOPE
+        ' ... other existing types stay here
+    }
+
+    interface GameFacade {
+        + startTurn(): void
+        + playCard(cardIndex: int): void
+        + endTurn(): void
+        + isGameOver(): boolean
+        + getCurrentPlayerHandSize(): int
+        + getLocalizedCardType(cardIndex: int): String
+    }
+
+    class Game implements GameFacade {
+        - numberOfPlayers: int
+        - gameType: GameType
+        - deck: Deck
+        - players: Player[]
+        - currentPlayerTurn: int
+        - currentPlayerNumberOfTurns: int
+        - isReversed: boolean
+
+        ' keep other fields like attackQueue, turnTracker, etc. as in messy design
+
+        + startTurn(): void
+        + playCard(cardIndex: int): void
+        + endTurn(): void
+        + isGameOver(): boolean
+        + getCurrentPlayerHandSize(): int
+        + getLocalizedCardType(cardIndex: int): String
+
+        ' existing methods can stay, but card-specific logic for these four
+        ' moves into Card implementations
+    }
+
+    class Deck {
+        - cards: List<Card>
+        + drawCard(): Card
+        + drawCardFromBottom(): Card
+        + insertCard(type: CardType, count: int, onTop: boolean): void
+        + insertExplodingKittenAtIndex(idx: int): void
+        + shuffleDeck(): void
+        + getDeckSize(): int
+        + getCardAtIndex(index: int): Card
+        ' ... other existing methods
+    }
+
+    class Player {
+        - hand: List<Card>
+        - isDead: boolean
+        - cursed: boolean
+
+        + getHandSize(): int
+        + getCardAt(index: int): Card
+        + addCardToHand(card: Card): void
+        + removeCardFromHand(index: int): void
+        + hasCard(type: CardType): boolean
+        + getIndexOfCard(type: CardType): int
+        + getIsDead(): boolean
+        + setIsDead(): void
+        + getIsCursed(): boolean
+        + setCursed(cursed: boolean): void
+        + shuffleHand(): void
+        ' ... other existing methods
+    }
+
+    ' ===== Card Behavior Abstraction =====
+
+    interface Card {
+        + getType(): CardType
+        + play(context: PlayContext): void
+    }
+
+    abstract class AbstractCard implements Card {
+        - type: CardType
+        + getType(): CardType
+        + play(context: PlayContext): void
+    }
+
+    class ExplodingKittenCard extends AbstractCard {
+        + play(context: PlayContext): void
+    }
+
+    class DefuseCard extends AbstractCard {
+        + play(context: PlayContext): void
+    }
+
+    class ShuffleCard extends AbstractCard {
+        + play(context: PlayContext): void
+    }
+
+    class NopeCard extends AbstractCard {
+        + play(context: PlayContext): void
+    }
+
+    ' ===== Play Context =====
+
+    class PlayContext {
+        - game: Game
+        - currentPlayer: Player
+        - targetPlayer: Player  ' optional, can be null
+        - deck: Deck
+
+        + getGame(): Game
+        + getCurrentPlayer(): Player
+        + getTargetPlayer(): Player
+        + getDeck(): Deck
+    }
+
+    ' ===== Relationships =====
+
+    Game --> Deck
+    Game --> "1..*" Player
+
+    Game ..> Card
+    Game ..> PlayContext
+    Deck --> "0..*" Card
+    Player --> "0..*" Card
+
+    Card <|.. AbstractCard
+    AbstractCard <|-- ExplodingKittenCard
+    AbstractCard <|-- DefuseCard
+    AbstractCard <|-- ShuffleCard
+    AbstractCard <|-- NopeCard
+
+    PlayContext --> Game
+    PlayContext --> Player
+    PlayContext --> Deck
 }
+
+package "ui" {
+    class GameUI {
+        - game: GameFacade
+        - messages: ResourceBundle
+
+        + chooseLanguage(): void
+        + chooseGame(): void
+        + chooseNumberOfPlayers(): void
+        + startTurn(): void
+        + endGame(): void
+        + checkIfGameOver(): boolean
+        ' other UI-only methods remain here, but they now
+        ' call game.playCard(...) / game.startTurn() etc.
+    }
+
+    GameUI --> GameFacade
+}
+
 @enduml
