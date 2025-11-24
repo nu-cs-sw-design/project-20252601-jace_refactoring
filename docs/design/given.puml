@@ -107,6 +107,8 @@ package domain.game{
     Game..>GameType
     Game..>CardType
     Game..>Card
+
+    Card..>CardType
 }
 package ui{
     +class GameUI{
