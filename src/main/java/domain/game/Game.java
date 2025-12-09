@@ -2,6 +2,8 @@ package domain.game;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Game {
 	private int numberOfPlayers;
@@ -51,7 +53,35 @@ public class Game {
 		this.attackCounter = 0;
 		this.numberOfAttacks = 0;
 		this.attacked = false;
+        //
+        registerAllEffects();
 	}
+    //effect
+    private final Map<CardType, CardEffect> effects = new HashMap<>();
+    private void registerEffect(CardEffect effect) {
+        effects.put(effect.getType(), effect);
+    }
+    private void registerAllEffects(){
+        registerEffect(new ShuffleEffect());
+    }
+
+    public void playCard(int playerIndex, int cardIndex) {
+        Player player = players[playerIndex];
+        Card card = player.getCardAt(cardIndex);
+        CardType type = card.getCardType();
+
+        CardEffect effect = effects.get(type);
+        if (effect == null) {
+            // Safety: this should never happen for Exploding Kitten,
+            // Nope, etc., because UI won't let the user choose them here.
+            return;
+        }
+
+        PlayContext ctx = new PlayContext(this, player, null);
+        player.removeCardFromHand(cardIndex);
+        effect.play(ctx);
+    }
+
 
 	public void swapTopAndBottom() {
 		if (checkDeckHasOneCardOrLess()) {

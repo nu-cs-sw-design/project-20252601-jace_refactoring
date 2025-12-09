@@ -1552,6 +1552,7 @@ public class GameUI {
 					System.out.println(newBottomCardMessage);
 					break;
 				case SHUFFLE:
+                    game.playCard(game.getPlayerAtIndex(), game.players[game.getPlayerAtIndex()].)
 					playShuffle();
 					break;
 				case SKIP:
