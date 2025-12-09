@@ -63,6 +63,8 @@ public class Game {
     }
     private void registerAllEffects(){
         registerEffect(new ShuffleEffect());
+        registerEffect(new DefuseEffect());
+        registerEffect(new NopeEffect());
     }
 
     public void playCard(int playerIndex, int cardIndex) {
@@ -72,8 +74,6 @@ public class Game {
 
         CardEffect effect = effects.get(type);
         if (effect == null) {
-            // Safety: this should never happen for Exploding Kitten,
-            // Nope, etc., because UI won't let the user choose them here.
             return;
         }
 

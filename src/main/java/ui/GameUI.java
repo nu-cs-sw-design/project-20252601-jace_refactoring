@@ -1488,7 +1488,11 @@ public class GameUI {
 					}
 				}
 			} else {
-				player.removeCardFromHand(cardIndex);
+				//player.removeCardFromHand(cardIndex);
+                if (cardType != CardType.SHUFFLE) {
+                    player.removeCardFromHand(cardIndex);
+                }
+
 			}
 
 			if (checkIfDifferentCardType(cardType, CardType.EXPLODING_KITTEN)
@@ -1552,8 +1556,8 @@ public class GameUI {
 					System.out.println(newBottomCardMessage);
 					break;
 				case SHUFFLE:
-                    game.playCard(game.getPlayerAtIndex(), game.players[game.getPlayerAtIndex()].)
-					playShuffle();
+                    game.playCard(game.getPlayerTurn(),cardIndex);
+					//playShuffle();
 					break;
 				case SKIP:
 					playSkip(false);

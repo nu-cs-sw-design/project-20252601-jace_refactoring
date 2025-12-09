@@ -7,6 +7,6 @@ public class ShuffleEffect implements CardEffect {
     }
     @Override
     public void play(PlayContext context) {
-        context.getDeck().shuffleDeck();
+        context.getGame().playShuffle(1);
     }
 }
